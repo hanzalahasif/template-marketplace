@@ -29,8 +29,10 @@ export default function TemplateCard({
         <article className={styles.card}>
             {/* Thumbnail with browser mockup */}
             <Link href={`/templates/${slug}`} className={styles.imageWrapper}>
-                {/* Price Badge */}
-{/* Price badge hidden temporarily */}
+                {/* FREE Badge */}
+                <span className={isFree ? styles.badgeFree : styles.badgePremium}>
+                    {isFree ? 'FREE' : 'PREMIUM'}
+                </span>
 
                 <BrowserMockup src={thumbnail} alt={title} title={`${slug}.com`} gallery={gallery} />
             </Link>
@@ -53,7 +55,7 @@ export default function TemplateCard({
                     </Link>
                     {isFree ? (
                         <Link href={`/templates/${slug}`} className={styles.downloadBtn}>
-                            Download
+                            Free Download
                         </Link>
                     ) : (
                         <Link

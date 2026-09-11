@@ -18,20 +18,39 @@
     background: #f8f9fa;
 }
 
-/* Price / Free Badge */
-.badge {
+/* FREE Badge */
+.badgeFree {
     position: absolute;
-    top: 24px;
-    right: 24px;
+    top: 16px;
+    right: 16px;
     z-index: 10;
-    padding: 4px 12px;
-    font-size: 0.7rem;
-    font-weight: 700;
+    padding: 4px 10px;
+    font-size: 0.68rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     border-radius: 4px;
     line-height: 1.4;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: #1a9e4a;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(26, 158, 74, 0.35);
+}
+
+.badgePremium {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    padding: 4px 10px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-radius: 4px;
+    line-height: 1.4;
+    background: #1e73be;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(30, 115, 190, 0.35);
 }
 
 /* Content */

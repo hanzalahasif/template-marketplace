@@ -29,11 +29,12 @@ export async function generateMetadata({
         return { title: 'Template Not Found' };
     }
 
-    const title = template.seoTitle || `${template.title} — Website Template`;
+    const title = template.seoTitle
+        ? template.seoTitle.replace(/\bpremium\b/gi, 'Free').replace(/\bfree free\b/gi, 'Free')
+        : `${template.title} — Free Website Template Download`;
     const description =
         template.seoDescription ||
-        template.description ||
-        `Download the ${template.title} website template. Professional, responsive, and ready to launch.`;
+        `Download ${template.title} for free — a professional, fully responsive HTML template. No login required. Instant ZIP download.`;
 
     const imageUrl =
         template.metaImage
@@ -47,6 +48,9 @@ export async function generateMetadata({
         ...(template.tags || []),
         ...(template.technologies || []),
         template.category || '',
+        'free website template',
+        'free HTML template download',
+        'free download',
         'website template',
         'HTML template',
     ].filter(Boolean);
@@ -112,30 +116,13 @@ export default async function TemplateDetailPage({
             name: 'TemplateLayer',
         },
         category: template.category || 'Website Template',
-        offers: template.pricingType === 'free'
-            ? {
-                '@type': 'Offer',
-                price: '0',
-                priceCurrency: 'USD',
-                availability: 'https://schema.org/InStock',
-                url: `${BASE_URL}/templates/${slug}`,
-            }
-            : (template.buyLinks || []).length > 0
-                ? (template.buyLinks || []).map((link: { platform: string; url: string; price: string }) => ({
-                    '@type': 'Offer',
-                    name: link.platform,
-                    price: String(link.price).replace(/[^0-9.]/g, '') || '0',
-                    priceCurrency: 'USD',
-                    availability: 'https://schema.org/InStock',
-                    url: link.url,
-                }))
-                : {
-                    '@type': 'Offer',
-                    price: String(template.price || '0').replace(/[^0-9.]/g, '') || '0',
-                    priceCurrency: 'USD',
-                    availability: 'https://schema.org/InStock',
-                    url: `${BASE_URL}/templates/${slug}`,
-                },
+        offers: {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+            url: `${BASE_URL}/templates/${slug}`,
+        },
     };
 
     return (

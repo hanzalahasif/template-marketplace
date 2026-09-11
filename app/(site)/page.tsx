@@ -42,24 +42,26 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteName = settings?.siteName || 'TemplateLayer';
   const siteUrl = 'https://templatelayer.com';
 
-  const title = `${siteName} — Free & Premium Website Templates`;
+  const title = `${siteName} — Free HTML Website Templates Download`;
   const description =
     settings?.siteDescription ||
-    'Download free and premium responsive HTML5/CSS3 website templates for AI startups, SaaS, agencies, portfolios, and more. Built with Bootstrap, Tailwind CSS & JavaScript.';
+    'Download free responsive HTML5/CSS3 website templates for AI startups, SaaS, agencies, portfolios, restaurants, crypto, and more. Built with Bootstrap, Tailwind CSS & JavaScript. Instant ZIP download, no login required.';
 
   const keywords = [
     'free website templates',
-    'premium HTML templates',
-    'responsive website templates',
-    'Bootstrap templates',
-    'Tailwind CSS templates',
-    'HTML5 CSS3 templates',
-    'landing page templates',
-    'SaaS templates',
-    'AI startup templates',
-    'agency website templates',
-    'portfolio templates',
-    'free download templates',
+    'free HTML templates download',
+    'free HTML5 templates',
+    'free CSS3 templates',
+    'free responsive templates',
+    'Bootstrap templates free',
+    'Tailwind CSS templates free',
+    'landing page templates free',
+    'free SaaS templates',
+    'free AI startup templates',
+    'free agency website templates',
+    'free portfolio templates',
+    'free download HTML templates',
+    'website template download',
   ].join(', ');
 
   return {
