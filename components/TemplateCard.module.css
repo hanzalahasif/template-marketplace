@@ -106,22 +106,29 @@
 /* Actions */
 .actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
+    align-items: stretch;
 }
 
 .previewBtn,
 .demoBtn,
 .downloadBtn {
     flex: 1;
-    padding: 10px 16px;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
     font-family: var(--font-heading);
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.74rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
+    white-space: nowrap;
+    min-height: 42px;
+    line-height: 1;
+    text-decoration: none;
 }
 
 .previewBtn {
