@@ -135,22 +135,22 @@
 }
 
 .demoBtn {
-    background: var(--color-success);
+    background: var(--accent-primary);
     color: white;
 }
 
 .demoBtn:hover {
-    background: #218838;
+    background: var(--accent-hover);
     color: white;
 }
 
 .downloadBtn {
-    background: #28a745;
+    background: #16a34a;
     color: white;
 }
 
 .downloadBtn:hover {
-    background: #218838;
+    background: #15803d;
     color: white;
 }
 

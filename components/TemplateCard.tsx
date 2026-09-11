@@ -50,21 +50,20 @@ export default function TemplateCard({
                 </div>
 
                 <div className={styles.actions}>
-                    <Link href={`/templates/${slug}`} className={styles.previewBtn}>
-                        More Info
+                    <Link
+                        href={`/preview/${slug}`}
+                        className={styles.demoBtn}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Live Demo
                     </Link>
-                    {isFree ? (
-                        <Link href={`/templates/${slug}`} className={styles.downloadBtn}>
-                            Free Download
-                        </Link>
-                    ) : (
-                        <Link
-                            href={`/preview/${slug}`}
-                            className={styles.demoBtn}
-                        >
-                            Live Demo
-                        </Link>
-                    )}
+                    <Link
+                        href={`/templates/${slug}`}
+                        className={styles.downloadBtn}
+                    >
+                        Free Download
+                    </Link>
                 </div>
             </div>
         </article>

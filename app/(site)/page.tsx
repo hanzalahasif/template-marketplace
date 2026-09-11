@@ -163,17 +163,14 @@ export default async function HomePage() {
       <section className={styles.hero}>
         <div className="container">
           <div className={styles.heroContent}>
-            <h1>Professional Website Templates</h1>
+            <h1>Free HTML Website Templates</h1>
             <p>
-              Download free and premium responsive HTML5/CSS3 website templates.
+              Download 100% free responsive HTML5/CSS3 website templates.
               Built with Bootstrap 5, Tailwind CSS, and modern JavaScript — ready to launch.
             </p>
             <div className={styles.heroActions}>
               <Link href="/templates" className="btn btn-primary">
-                Browse All Templates
-              </Link>
-              <Link href="/free-templates" className="btn btn-secondary">
-                Free Templates
+                Browse Free Templates
               </Link>
             </div>
           </div>
@@ -202,14 +199,14 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── ALL TEMPLATES (Free + Premium combined) ── */}
+      {/* ── ALL TEMPLATES (100% Free) ── */}
       <section className={`section ${styles.templates}`}>
         <div className="container">
           <div className="section-header">
-            <h2>Free &amp; Premium Templates</h2>
+            <h2>Free Website Templates</h2>
             <p>
-              {totalCount > 0 ? `${totalCount} templates` : 'Professional templates'} for AI startups,
-              SaaS, agencies, portfolios and more — free and premium, all in one place.
+              {totalCount > 0 ? `${totalCount} templates` : 'Free templates'} for AI startups,
+              SaaS, agencies, portfolios and more — 100% free download.
             </p>
           </div>
 
@@ -227,10 +224,7 @@ export default async function HomePage() {
 
           <div className={styles.viewAll}>
             <Link href="/templates" className="btn btn-primary">
-              View All Templates
-            </Link>
-            <Link href="/free-templates" className="btn btn-secondary">
-              Free Only
+              View All Free Templates
             </Link>
           </div>
         </div>

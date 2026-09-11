@@ -51,8 +51,7 @@ export default function Header() {
                     {/* Desktop Nav */}
                     <nav className={styles.nav}>
                         <Link href="/">Home</Link>
-                        <Link href="/free-templates">Free Templates</Link>
-                        <Link href="/templates">Website Templates</Link>
+                        <Link href="/templates">Free Templates</Link>
                         <Link href="/blog">Blog</Link>
                         <Link href="/about">About</Link>
                         <Link href="/contact">Contact</Link>
@@ -77,8 +76,7 @@ export default function Header() {
             <div className={`${styles.mobileMenu} ${isMobileMenuOpen ? styles.open : ''}`}>
                 <nav>
                     <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
-                    <Link href="/free-templates" onClick={() => setIsMobileMenuOpen(false)}>Free Templates</Link>
-                    <Link href="/templates" onClick={() => setIsMobileMenuOpen(false)}>Website Templates</Link>
+                    <Link href="/templates" onClick={() => setIsMobileMenuOpen(false)}>Free Templates</Link>
                     <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
                     <Link href="/about" onClick={() => setIsMobileMenuOpen(false)}>About</Link>
                     <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>

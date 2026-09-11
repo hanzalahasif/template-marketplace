@@ -1,15 +1,15 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import TemplateCard from '@/components/TemplateCard';
-import { getPremiumTemplates, getCategories } from '@/sanity/lib/queries';
+import { getFreeTemplates, getCategories } from '@/sanity/lib/queries';
 import { urlFor } from '@/sanity/lib/client';
 import styles from './page.module.css';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-    title: 'Website Templates | TemplateLayer - Premium HTML, CSS & JS Templates',
-    description: 'Browse our collection of premium, hand-crafted website templates. Fast, responsive, and SEO-optimized for modern web projects.',
+    title: 'Free Website Templates | TemplateLayer - Download HTML, CSS & JS Templates',
+    description: 'Download 100% free responsive website templates. Hand-crafted, modern HTML5, CSS3, Bootstrap 5 and Tailwind templates ready to launch your next project.',
 };
 
 
@@ -22,7 +22,7 @@ function mapTemplate(t: Record<string, unknown>) {
         gallery: (t.gallery as string[]) || [],
         category: t.category as string,
         demoUrl: (t.demoUrl as string) || '#',
-        price: (t.price as string) || '$0',
+        price: 'free',
     };
 }
 
@@ -44,7 +44,7 @@ export default async function TemplatesPage({
 
     try {
         const [sanityTemplates, sanityCategories] = await Promise.all([
-            getPremiumTemplates(),
+            getFreeTemplates(),
             getCategories('template'),
         ]);
         allTemplates = sanityTemplates?.length > 0 ? sanityTemplates.map(mapTemplate) : [];
@@ -74,9 +74,9 @@ export default async function TemplatesPage({
             {/* Hero */}
             <section className={styles.hero}>
                 <div className="container">
-                    <span className="badge">Browse Collection</span>
-                    <h1>Website Templates</h1>
-                    <p>Hand-crafted, pixel-perfect website templates ready to launch your next project.</p>
+                    <span className="badge">Free Collection</span>
+                    <h1>Free Website Templates</h1>
+                    <p>Hand-crafted, pixel-perfect website templates. 100% free to download and launch your next project.</p>
                 </div>
             </section>
 
