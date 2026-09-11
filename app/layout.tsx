@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
     
     title: {
-        default: "TemplateLayer — Free & Premium Website Templates",
+        default: "TemplateLayer — Free HTML Website Templates Download",
         template: "%s | TemplateLayer",
     },
     description:
-        "Download free and premium responsive HTML5/CSS3 website templates. Built with Bootstrap 5, Tailwind CSS, and modern JavaScript — ready to launch.",
+        "Download 100% free responsive HTML5/CSS3 website templates. Built with Bootstrap 5, Tailwind CSS, and modern JavaScript — ready to launch.",
     metadataBase: new URL("https://templatelayer.com"),
     authors: [{ name: "TemplateLayer", url: "https://templatelayer.com" }],
     robots: {

@@ -64,11 +64,11 @@ export default function TemplatePreviewClient({
         <div className={styles.page}>
             {/* Back Link */}
             <div className={`container ${styles.backContainer}`}>
-                <Link href={isFree ? '/free-templates' : '/templates'} className={styles.backLink}>
+                <Link href="/templates" className={styles.backLink}>
                     <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
-                    Back to {isFree ? 'Free Templates' : 'Templates'}
+                    Back to Templates
                 </Link>
             </div>
 
