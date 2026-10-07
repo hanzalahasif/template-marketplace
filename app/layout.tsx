@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
     
     title: {
-        default: "TemplateLayer — Free HTML Website Templates Download",
+        default: "TemplateLayer — Free Website Templates Download",
         template: "%s | TemplateLayer",
     },
     description:
