@@ -150,8 +150,6 @@ export default async function HomePage() {
     },
   };
 
-  const totalCount = allTemplates.length;
-
   return (
     <>
       {/* JSON-LD Structured Data */}
@@ -205,8 +203,7 @@ export default async function HomePage() {
           <div className="section-header">
             <h2>Free Website Templates</h2>
             <p>
-              {totalCount > 0 ? `${totalCount} templates` : 'Free templates'} for AI startups,
-              SaaS, agencies, portfolios and more — 100% free download.
+              Free responsive website templates for AI startups, SaaS, agencies, portfolios and more — 100% free download.
             </p>
           </div>
 
@@ -224,7 +221,7 @@ export default async function HomePage() {
 
           <div className={styles.viewAll}>
             <Link href="/templates" className="btn btn-primary">
-              View All Free Templates
+              View all templates &rarr;
             </Link>
           </div>
         </div>
