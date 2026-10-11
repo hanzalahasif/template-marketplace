@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { getBlogPostBySlug, getAllBlogSlugs } from '@/sanity/lib/queries';
 import { urlFor } from '@/sanity/lib/client';
 import { PortableText } from 'next-sanity';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import styles from './page.module.css';
 
 const BASE_URL = 'https://templatelayer.com';
@@ -176,7 +178,17 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <article className={styles.article}>
                 <div className="container">
                     <div className={styles.content}>
-                        {post.body ? (
+                        {post.contentFormat === 'markdown' && post.bodyMarkdown ? (
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {post.bodyMarkdown}
+                            </ReactMarkdown>
+                        ) : post.body && (!post.contentFormat || post.contentFormat === 'blocks') ? (
+                            <PortableText value={post.body} />
+                        ) : post.bodyMarkdown ? (
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {post.bodyMarkdown}
+                            </ReactMarkdown>
+                        ) : post.body ? (
                             <PortableText value={post.body} />
                         ) : null}
                     </div>

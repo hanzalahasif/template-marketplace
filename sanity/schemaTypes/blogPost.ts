@@ -27,9 +27,24 @@ export default defineType({
             validation: (rule) => rule.required(),
         }),
         defineField({
+            name: 'contentFormat',
+            title: 'Content Format',
+            type: 'string',
+            description: 'Choose whether to write using the Block Editor (Rich Text) or Markdown',
+            options: {
+                list: [
+                    { title: 'Block Editor (Rich Text)', value: 'blocks' },
+                    { title: 'Markdown', value: 'markdown' },
+                ],
+                layout: 'radio',
+            },
+            initialValue: 'blocks',
+        }),
+        defineField({
             name: 'body',
-            title: 'Body',
+            title: 'Body (Rich Text)',
             type: 'array',
+            hidden: ({ document }) => document?.contentFormat === 'markdown',
             of: [
                 {
                     type: 'block',
@@ -79,6 +94,13 @@ export default defineType({
                     ],
                 },
             ],
+        }),
+        defineField({
+            name: 'bodyMarkdown',
+            title: 'Body (Markdown)',
+            type: 'markdown',
+            description: 'Write or paste your Markdown content here. Supports headings, bold/italic, lists, tables, code blocks, links, and image uploads.',
+            hidden: ({ document }) => document?.contentFormat !== 'markdown',
         }),
         defineField({
             name: 'thumbnail',

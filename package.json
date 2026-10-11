@@ -12,6 +12,7 @@
     "@sanity/image-url": "^2.0.3",
     "@sanity/vision": "^5.9.0",
     "dotenv": "^17.3.1",
+    "easymde": "^2.21.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "jszip": "^3.10.1",
@@ -19,8 +20,11 @@
     "next-sanity": "^12.1.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "resend": "^6.9.2",
     "sanity": "^5.9.0",
+    "sanity-plugin-markdown": "^9.0.15",
     "sanity-plugin-media": "^4.1.1"
   },
   "devDependencies": {
