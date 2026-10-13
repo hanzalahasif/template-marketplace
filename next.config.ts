@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  skipTrailingSlashRedirect: true,
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -19,6 +20,11 @@ const nextConfig: NextConfig = {
       {
         source: '/free-templates',
         destination: '/templates',
+        permanent: true,
+      },
+      {
+        source: '/tools/wedding-budget-calculator/index.html',
+        destination: '/tools/wedding-budget-calculator/',
         permanent: true,
       },
     ];

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-    title: 'Free Web Tools | TemplateLayer',
+    title: 'Free Web Tools',
     description: 'Free online tools for wedding planning, web design, and more. No signup required — instant access to our growing collection of useful calculators and generators.',
     alternates: {
         canonical: 'https://templatelayer.com/tools',
@@ -73,6 +73,7 @@ export default function ToolsPage() {
                             <Link
                                 key={tool.slug}
                                 href={`/tools/${tool.slug}/`}
+                                prefetch={false}
                                 className={styles.card}
                             >
                                 <div className={styles.cardIcon}>{tool.icon}</div>
