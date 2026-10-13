@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Wedding Budget Calculator (2026)</title>
+<meta name="description" content="Free wedding budget calculator: enter your budget and guests, get an instant category breakdown with charts. Multi-currency, save & share. No signup.">
+<style>
+:root{
+  --bg:#faf7f1; --card:#ffffff; --ink:#3a3238; --muted:#8a7f76;
+  --accent:#b76e79; --accent-dark:#9c5661; --line:#e9e0d4;
+  --green:#5a7d5a; --red:#b0492f; --amber:#a97b1f;
+  --radius:14px; --shadow:0 2px 12px rgba(90,70,60,.08);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.55;font-size:16px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:1.25;margin:0 0 .6em}
+h1{font-size:clamp(1.7rem,4.5vw,2.4rem)}
+h2{font-size:clamp(1.3rem,3.5vw,1.7rem);margin-top:2.2em}
+h3{font-size:1.05rem}
+.num,.money,input[type=number]{font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header.site{padding:26px 0 8px;text-align:center}
+header.site .kicker{color:var(--accent);text-transform:uppercase;letter-spacing:.14em;font-size:.75rem;font-weight:700}
+header.site p.lead{color:var(--muted);max-width:640px;margin:.6em auto 0}
+.free-badge{display:inline-block;margin:.7em 0 .2em;padding:.45em 1.1em;border-radius:999px;background:#2f7d4f;color:#fff;font-weight:800;font-size:.8rem;letter-spacing:.06em}
+ul.benefits{list-style:none;margin:.9em auto 0;padding:0;max-width:560px;text-align:left}
+ul.benefits li{position:relative;padding:.28em 0 .28em 1.7em;color:#3c3a38;font-size:.95rem}
+ul.benefits li::before{content:"✓";position:absolute;left:0;color:#2f7d4f;font-weight:800}
+/* ---------- tool layout ---------- */
+.tool{margin:22px 0 8px}
+.tool-grid{display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:960px){
+  .tool-grid{grid-template-columns:400px 1fr;align-items:start}
+  .results{position:sticky;top:16px}
+}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px}
+.card h2{margin-top:0;font-size:1.25rem}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px}
+.field .hint{font-weight:400;color:var(--muted);font-size:.8rem}
+input[type=number],input[type=text],select{
+  width:100%;padding:11px 12px;font-size:1rem;border:1.5px solid var(--line);
+  border-radius:10px;background:#fff;color:var(--ink)}
+input[type=number]:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.preset{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 6px;
+  cursor:pointer;font-size:.85rem;text-align:center;line-height:1.3}
+.preset b{display:block;font-size:.95rem}
+.preset small{color:var(--muted)}
+.preset.active{border-color:var(--accent);background:#fdf3f4;box-shadow:inset 0 0 0 1px var(--accent)}
+.btn{display:inline-block;border:0;border-radius:999px;padding:12px 20px;font-size:.95rem;
+  font-weight:700;cursor:pointer;background:var(--accent);color:#fff;margin:4px 6px 4px 0;min-height:44px}
+.btn:hover{background:var(--accent-dark)}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent-dark)}
+.btnrow{margin-top:6px}
+/* categories */
+.cat{border-top:1px solid var(--line);padding:12px 2px}
+.cat-head{display:flex;align-items:center;gap:8px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+.cat-name{flex:1;font-weight:600;font-size:.92rem}
+.cat-amt{font-weight:700;font-size:.95rem;white-space:nowrap}
+.cat-amt input{width:92px;padding:6px 8px;font-size:.9rem;text-align:right}
+.cat-slider{display:flex;align-items:center;gap:10px;margin-top:6px}
+.cat-slider input[type=range]{flex:1}
+.cat-pct{width:52px;text-align:right;font-size:.85rem;color:var(--muted);flex:none}
+.cat.auto .cat-slider{opacity:.55}
+.cat-note{font-size:.78rem;color:var(--muted);margin-top:2px}
+details.actual{margin-top:8px;font-size:.88rem}
+details.actual summary{cursor:pointer;color:var(--accent-dark);font-weight:600;min-height:32px}
+.actual-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.actual-grid label{font-size:.78rem;color:var(--muted);font-weight:600}
+.variance{font-size:.82rem;margin-top:6px;font-weight:600}
+/* results */
+.meter{text-align:center;padding:14px;border-radius:var(--radius);margin-bottom:14px}
+.meter.under{background:#eef5ee}.meter.over{background:#fbeeea}.meter.exact{background:#f4f1ec}
+.meter .big{font-size:1.6rem;font-weight:800;font-family:Georgia,serif}
+.meter.under .big{color:var(--green)}.meter.over .big{color:var(--red)}
+.meter .sub{color:var(--muted);font-size:.88rem}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.stat{background:#fbf9f5;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat .k{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-size:1.15rem;font-weight:800}
+.warn{background:#fdf6e7;border:1px solid #ecd9a8;border-radius:10px;padding:10px 12px;
+  font-size:.88rem;margin:8px 0}
+.warn b{color:var(--amber)}
+.alloc-warn{background:#fbeeea;border:1px solid #eec9b8;border-radius:10px;padding:10px 12px;
+  font-size:.88rem;margin:8px 0;display:none}
+.donut-wrap{display:flex;justify-content:center;margin:6px 0 2px}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:.82rem;margin-top:8px}
+.legend span{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.totals{width:100%;border-collapse:collapse;font-size:.92rem;margin-top:10px}
+.totals td,.totals th{padding:8px 4px;border-top:1px solid var(--line);text-align:right}
+.totals td:first-child,.totals th:first-child{text-align:left}
+.totals tr.total td{font-weight:800;border-top:2px solid var(--ink)}
+.sharemsg{font-size:.85rem;color:var(--green);min-height:1.4em;margin-top:6px}
+/* content */
+.content{max-width:760px;margin:0 auto;padding:8px 0 40px}
+.content table{width:100%;border-collapse:collapse;font-size:.92rem;margin:14px 0}
+.content th,.content td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+.content th{background:#f4eee4}
+.faq details{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff}
+.faq summary{cursor:pointer;padding:12px 14px;font-weight:600;min-height:44px}
+.faq details div{padding:0 14px 14px;color:#4a423c}
+footer.site{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 0 40px;border-top:1px solid var(--line)}
+/* print */
+.print-only{display:none}
+@media print{
+  .no-print{display:none!important}
+  .print-only{display:block}
+  body{background:#fff}
+  .card{box-shadow:none}
+  .tool-grid{display:block}
+}
+@media(max-width:420px){
+  .row2{grid-template-columns:1fr}
+  .statgrid{grid-template-columns:1fr 1fr}
+  .cat-amt input{width:80px}
+}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Wedding Budget Calculator",
+"applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+"description":"Free wedding budget calculator with multi-currency support, visual breakdown, savings tracking and shareable budgets."}
+</script>
+</head>
+<body>
+<header class="site no-print">
+  <div class="wrap">
+    <div class="kicker">TemplateLayer &middot; Free Wedding Tools</div>
+    <div class="free-badge">100% FREE FOREVER &middot; NO SIGNUP NEEDED</div>
+    <h1>Wedding Budget Calculator: See Exactly Where Every Dollar Goes</h1>
+    <p class="lead">Enter your budget and guest count — get an instant, visual breakdown of your entire wedding spend.</p>
+    <ul class="benefits">
+      <li>Donut chart + over/under budget meter, live as you type</li>
+      <li>5 currencies: USD, GBP, EUR, CAD, AUD</li>
+      <li>Auto-saves in your browser — come back anytime</li>
+      <li>Shareable link — plan it together with your partner</li>
+      <li>Track real vendor quotes &amp; deposits paid</li>
+    </ul>
+  </div>
+</header>
+<main class="wrap tool no-print">
+  <div class="tool-grid">
+    <!-- ============ CONTROLS ============ -->
+    <section class="card" aria-label="Budget inputs">
+      <h2>Your wedding</h2>
+      <div class="row2">
+        <div class="field">
+          <label for="budget">Total budget</label>
+          <input type="number" id="budget" min="0" step="100" value="30000" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="currency">Currency</label>
+          <select id="currency">
+            <option value="USD" selected>USD — US Dollar ($)</option>
+            <option value="GBP">GBP — British Pound (£)</option>
+            <option value="EUR">EUR — Euro (€)</option>
+            <option value="CAD">CAD — Canadian Dollar (C$)</option>
+            <option value="AUD">AUD — Australian Dollar (A$)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="guests">Guest count <span class="hint" id="guestHint">— typical wedding</span></label>
+        <div class="row2" style="align-items:center">
+          <input type="number" id="guests" min="0" max="2000" step="1" value="100" inputmode="numeric">
+          <input type="range" id="guestsRange" min="0" max="400" step="5" value="100" aria-label="Guest count slider">
+        </div>
+      </div>
+      <div class="field">
+        <label for="perPerson">Catering cost per person <span class="hint">— total catering is auto-calculated</span></label>
+        <input type="number" id="perPerson" min="0" step="1" value="84" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label>Wedding size preset</label>
+        <div class="presets" role="group" aria-label="Wedding size presets">
+          <button type="button" class="preset" data-preset="elopement"><b>Elopement</b><small>~20 guests</small></button>
+          <button type="button" class="preset" data-preset="intimate"><b>Intimate</b><small>~50 guests</small></button>
+          <button type="button" class="preset active" data-preset="classic"><b>Classic</b><small>~100 guests</small></button>
+          <button type="button" class="preset" data-preset="grand"><b>Grand</b><small>200+ guests</small></button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:6px">
+        <label>Budget allocation <span class="hint">— drag sliders or type exact amounts</span></label>
+      </div>
+      <div id="categories"></div>
+      <div class="btnrow">
+        <button type="button" class="btn" id="copyLink">Copy share link</button>
+        <button type="button" class="btn ghost" id="csvBtn">Download CSV</button>
+        <button type="button" class="btn ghost" id="printBtn">Print</button>
+        <button type="button" class="btn ghost" id="resetBtn">Reset</button>
+        <div class="sharemsg" id="shareMsg" role="status"></div>
+      </div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section class="card results" aria-label="Budget results" aria-live="polite">
+      <h2>Your breakdown</h2>
+      <div class="meter exact" id="meter">
+        <div class="big" id="meterBig">—</div>
+        <div class="sub" id="meterSub">Total planned vs budget</div>
+      </div>
+      <div class="alloc-warn" id="allocWarn"></div>
+      <div id="warnings"></div>
+      <div class="donut-wrap">
+        <svg id="donut" width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="Budget allocation chart"></svg>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div class="statgrid">
+        <div class="stat"><div class="k">Cost per guest</div><div class="v num" id="costPerGuest">—</div><div class="k" id="guestTier"></div></div>
+        <div class="stat"><div class="k">Catering per person</div><div class="v num" id="cateringPP">—</div><div class="k" id="cateringTier"></div></div>
+      </div>
+      <table class="totals">
+        <tr><td>Total planned (estimated)</td><td class="num" id="tEst">—</td></tr>
+        <tr><td>Total actual quotes</td><td class="num" id="tAct">—</td></tr>
+        <tr><td>Total deposits paid</td><td class="num" id="tPaid">—</td></tr>
+        <tr class="total"><td>Remaining balance</td><td class="num" id="tRem">—</td></tr>
+      </table>
+      <p style="font-size:.82rem;color:var(--muted)">Tip: expand any category below to enter the real vendor quote and track deposits paid.</p>
+    </section>
+  </div>
+</main>
+
+<!-- print-only summary -->
+<div class="wrap print-only">
+  <h2>Wedding Budget Summary</h2>
+  <p id="printMeta"></p>
+  <table class="totals" id="printTable" style="width:100%;border-collapse:collapse"></table>
+  <p style="color:#777;font-size:.85rem">Generated with the free TemplateLayer Wedding Budget Calculator.</p>
+</div>
+
+<!-- ============ CONTENT (SEO) ============ -->
+<div class="wrap content no-print">
+  <h2>How the calculator works</h2>
+  <p><strong>Step 1 — Tell it the basics.</strong> Enter your total budget, pick your currency, and set your guest count. Choose a wedding-size preset (Elopement, Intimate, Classic, or Grand) and the calculator tunes sensible starting percentages for you.</p>
+  <p><strong>Step 2 — Tune the allocation.</strong> Drag any category slider, or type an exact dollar amount to lock a category (for example, when the venue quotes you $9,500). Catering is calculated automatically from your guest count × cost per person, because that is how caterers actually price.</p>
+  <p><strong>Step 3 — Track reality.</strong> As vendor quotes come in, expand a category and enter the <em>actual</em> price plus any deposit you have paid. The calculator shows variance per category, total deposits paid, and your remaining balance — turning a one-time estimate into a planning companion you will use for months.</p>
+
+  <h2>Default wedding budget breakdown</h2>
+  <p>These are the starting percentages for a classic ~120-guest wedding, based on commonly cited industry splits. Every wedding is different — treat them as a starting point, then drag the sliders to match your priorities.</p>
+  <table>
+    <tr><th>Category</th><th>Default</th><th>Typical range</th></tr>
+    <tr><td>Venue</td><td>25%</td><td>25–35%</td></tr>
+    <tr><td>Catering</td><td>28%</td><td>20–30%</td></tr>
+    <tr><td>Photography &amp; videography</td><td>10%</td><td>8–12%</td></tr>
+    <tr><td>Attire &amp; beauty</td><td>8%</td><td>6–10%</td></tr>
+    <tr><td>Flowers &amp; décor</td><td>7%</td><td>6–10%</td></tr>
+    <tr><td>Entertainment / DJ</td><td>6%</td><td>5–9%</td></tr>
+    <tr><td>Stationery &amp; invitations</td><td>2%</td><td>1–3%</td></tr>
+    <tr><td>Cake</td><td>2%</td><td>1–3%</td></tr>
+    <tr><td>Rings</td><td>2%</td><td>1–3%</td></tr>
+    <tr><td>Transport</td><td>2%</td><td>1–3%</td></tr>
+    <tr><td>Favors &amp; gifts</td><td>2%</td><td>1–3%</td></tr>
+    <tr><td>Buffer / miscellaneous</td><td>6%</td><td>5–10%</td></tr>
+  </table>
+
+  <h2>Hidden costs most couples forget</h2>
+  <p>The number-one reason wedding budgets explode is not the big items — it is the small ones nobody budgeted for:</p>
+  <ul>
+    <li><strong>Taxes and service charges.</strong> Catering quotes often exclude 8–10% tax plus 18–22% service charges. In the UK, remember 20% VAT.</li>
+    <li><strong>Tips and gratuities.</strong> Hair and makeup artists, drivers, delivery crews — budget 15–20% where tipping is customary.</li>
+    <li><strong>Vendor meals.</strong> Your photographer, videographer, DJ, and planner eat too — usually at the vendor rate, not the guest rate.</li>
+    <li><strong>Overtime.</strong> Photographers, DJs, and venues charge steep hourly overtime fees when the party runs long.</li>
+    <li><strong>Alterations and fittings.</strong> Dress and suit alterations routinely add several hundred to attire costs.</li>
+    <li><strong>Postage.</strong> Save-the-dates plus invitations for 120 guests, some international — postage adds up fast.</li>
+    <li><strong>Marriage license and officiant fees.</strong> Small line items, frequently forgotten entirely.</li>
+  </ul>
+  <p>This is why the calculator includes a 7% buffer category by default. Protect it — you will need it.</p>
+
+  <h2>Cost-per-guest benchmarks</h2>
+  <p>Divide your total budget by your guest count. Where do you land?</p>
+  <table>
+    <tr><th>Tier</th><th>Per guest (USD)</th><th>What it looks like</th></tr>
+    <tr><td>Budget-conscious</td><td>Under $100</td><td>Backyard or restaurant wedding, minimal vendors, DIY décor</td></tr>
+    <tr><td>Typical</td><td>$100–$250</td><td>Traditional venue, full catering, photographer, DJ</td></tr>
+    <tr><td>Luxury</td><td>$250+</td><td>Premium venue, plated dinner, full vendor team, elaborate florals</td></tr>
+  </table>
+  <p>The fastest way to cut costs is the guest list: every guest removed saves not just their plate, but their share of rentals, favors, stationery, and cake.</p>
+
+  <h2 class="faq">Frequently asked questions</h2>
+  <div class="faq" id="faqList">
+    <details><summary>Is this wedding budget calculator really free?</summary><div>Yes — 100% free, no signup, no account, no email required. Your data is stored only in your own browser.</div></details>
+    <details><summary>Which currencies are supported?</summary><div>US Dollar, British Pound, Euro, Canadian Dollar, and Australian Dollar. Switch the currency dropdown and every amount on the page reformats instantly.</div></details>
+    <details><summary>Is my budget saved if I close the page?</summary><div>Yes. Everything you enter is auto-saved in your browser (localStorage). Come back tomorrow and your budget is exactly as you left it.</div></details>
+    <details><summary>Can I share my budget with my partner or planner?</summary><div>Yes — click “Copy share link” and send it to anyone. The link encodes your full budget; opening it loads the exact same numbers on their device.</div></details>
+    <details><summary>How does deposit tracking work?</summary><div>Expand any category, enter the vendor's actual quote and the deposit you have paid. The calculator shows total paid, total remaining balance, and per-category variance between your estimate and reality.</div></details>
+    <details><summary>What if I am planning a micro-wedding or elopement?</summary><div>Use the Elopement or Intimate preset. The calculator re-tunes the starting percentages — for example, photography takes a bigger share of a small wedding, while catering shrinks.</div></details>
+    <details><summary>Does it work for destination weddings?</summary><div>Yes. Enter your total budget including travel, and use the Buffer category generously — destination weddings have more surprise costs (local taxes, vendor travel fees, currency swings).</div></details>
+    <details><summary>How often should I update my budget?</summary><div>Every time you sign a vendor contract or pay a deposit. A budget you update monthly stays honest; a budget you set once and forget does not.</div></details>
+    <details><summary>Can I print my budget or export it?</summary><div>Yes — the Print button produces a clean one-page summary, and Download CSV exports every category with estimates, actuals, deposits paid, and remaining balance for spreadsheets.</div></details>
+    <details><summary>What is a realistic wedding budget in 2026?</summary><div>It varies enormously by location and guest count. A useful rule of thumb: typical US weddings land around $100–$250 per guest all-in. Enter your numbers above to see where you fall.</div></details>
+    <details><summary>What percentage should go to the venue and catering?</summary><div>Together they are usually the biggest slice: roughly 45–55% combined. If yours totals far above 60%, either trim the guest list or raise the budget — the calculator will flag it.</div></details>
+    <details><summary>Do I need to create an account to use the advanced features?</summary><div>No. Save, share links, CSV export, and deposit tracking all work without any account — your data never leaves your device except through a share link you explicitly copy.</div></details>
+  </div>
+</div>
+
+<footer class="site no-print">
+  <div class="wrap">Free tool by TemplateLayer · <span id="footNote">Plan smarter, celebrate bigger.</span></div>
+</footer>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is this wedding budget calculator really free?","acceptedAnswer":{"@type":"Answer","text":"Yes — 100% free, no signup, no account, no email required. Your data is stored only in your own browser."}},
+{"@type":"Question","name":"Which currencies are supported?","acceptedAnswer":{"@type":"Answer","text":"US Dollar, British Pound, Euro, Canadian Dollar, and Australian Dollar. Switch the currency dropdown and every amount reformats instantly."}},
+{"@type":"Question","name":"Is my budget saved if I close the page?","acceptedAnswer":{"@type":"Answer","text":"Yes. Everything is auto-saved in your browser via localStorage."}},
+{"@type":"Question","name":"Can I share my budget with my partner or planner?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Copy share link button encodes your full budget into the URL."}},
+{"@type":"Question","name":"How does deposit tracking work?","acceptedAnswer":{"@type":"Answer","text":"Enter the vendor's actual quote and deposit paid per category; the tool shows variance, total paid and remaining balance."}},
+{"@type":"Question","name":"What if I am planning a micro-wedding or elopement?","acceptedAnswer":{"@type":"Answer","text":"Use the Elopement or Intimate preset, which re-tunes starting percentages for small weddings."}},
+{"@type":"Question","name":"Does it work for destination weddings?","acceptedAnswer":{"@type":"Answer","text":"Yes — include travel in the budget and keep the buffer category generous."}},
+{"@type":"Question","name":"How often should I update my budget?","acceptedAnswer":{"@type":"Answer","text":"Every time you sign a vendor contract or pay a deposit."}},
+{"@type":"Question","name":"Can I print my budget or export it?","acceptedAnswer":{"@type":"Answer","text":"Yes — Print produces a one-page summary; Download CSV exports everything for spreadsheets."}},
+{"@type":"Question","name":"What is a realistic wedding budget in 2026?","acceptedAnswer":{"@type":"Answer","text":"A useful rule of thumb: typical US weddings land around $100–$250 per guest all-in."}},
+{"@type":"Question","name":"What percentage should go to the venue and catering?","acceptedAnswer":{"@type":"Answer","text":"Roughly 45–55% combined; far above 60% means trimming the guest list or raising the budget."}},
+{"@type":"Question","name":"Do I need to create an account to use the advanced features?","acceptedAnswer":{"@type":"Answer","text":"No — save, share links, CSV export and deposit tracking all work without any account."}}
+]}
+</script>
+<script>
+'use strict';
+/* ================= DATA ================= */
+var CATS = [
+  {id:'venue',     name:'Venue',                    pct:25, color:'#b76e79', min:25, max:35},
+  {id:'catering',  name:'Catering',                 pct:28, color:'#d4a373', min:20, max:30, auto:true},
+  {id:'photo',     name:'Photography & videography',pct:10, color:'#a3b18a', min:8,  max:12},
+  {id:'attire',    name:'Attire & beauty',          pct:8,  color:'#c9ada7', min:6,  max:10},
+  {id:'flowers',   name:'Flowers & décor',          pct:7,  color:'#b5838d', min:6,  max:10},
+  {id:'music',     name:'Entertainment / DJ',       pct:6,  color:'#7d9b76', min:5,  max:9},
+  {id:'stationery',name:'Stationery & invitations', pct:2,  color:'#e9c46a', min:1,  max:3},
+  {id:'cake',      name:'Cake',                     pct:2,  color:'#8ecae6', min:1,  max:3},
+  {id:'rings',     name:'Rings',                    pct:2,  color:'#ffb3c1', min:1,  max:3},
+  {id:'transport', name:'Transport',                pct:2,  color:'#a2d2ff', min:1,  max:3},
+  {id:'favors',    name:'Favors & gifts',           pct:2,  color:'#ffc8dd', min:1,  max:3},
+  {id:'buffer',    name:'Buffer / miscellaneous',   pct:6,  color:'#6d6875', min:5,  max:10}
+];
+var CURR = {
+  USD:{code:'USD', pp:84,  ppRange:[75,150],  tiers:[100,250]},
+  GBP:{code:'GBP', pp:70,  ppRange:[60,120],  tiers:[80,200]},
+  EUR:{code:'EUR', pp:75,  ppRange:[65,130],  tiers:[90,220]},
+  CAD:{code:'CAD', pp:110, ppRange:[95,180],  tiers:[130,320]},
+  AUD:{code:'AUD', pp:120, ppRange:[100,190], tiers:[140,350]}
+};
+var PRESETS = {
+  elopement:{guests:20,  budget:8000,  pp:null, pcts:[15,21,18,10,8,2,2,2,6,8,2,6]},
+  intimate: {guests:50,  budget:15000, pp:null, pcts:[22,28,12,8,8,5,2,2,3,3,2,5]},
+  classic:  {guests:100, budget:30000, pp:null, pcts:[25,28,10,8,7,6,2,2,2,2,2,6]},
+  grand:    {guests:200, budget:80000, pp:null, pcts:[30,21,9,7,9,8,2,2,2,2,1,7]}
+};
+var STORE_KEY = 'tl-wedding-budget-v1';
+
+/* ================= PURE STATE / MATH (testable, no DOM) ================= */
+function clamp(v,a,b){ v=+v; if(isNaN(v)) v=a; return Math.min(b, Math.max(a, v)); }
+function num(v,d){ v=parseFloat(v); return isNaN(v)?d:v; }
+
+function defaultState(){
+  return {
+    budget:30000, currency:'USD', guests:100, perPerson:84, preset:'classic',
+    cats: CATS.map(function(c){ return {id:c.id, pct:c.pct, override:null, actual:null, paid:null}; })
+  };
+}
+function getCat(state,id){
+  for(var i=0;i<state.cats.length;i++) if(state.cats[i].id===id) return state.cats[i];
+  return null;
+}
+/* catering is auto: amount = guests × perPerson; effective pct derived */
+function cateringAmount(state){ return Math.max(0, state.guests) * Math.max(0, state.perPerson); }
+function catAmount(state, cat){
+  var c = CATS.filter(function(x){return x.id===cat.id;})[0];
+  if(cat.override!=null && !isNaN(cat.override)) return Math.max(0, cat.override);
+  if(c && c.auto) return cateringAmount(state);
+  if(state.budget<=0) return 0;
+  return Math.max(0, cat.pct)/100 * state.budget;
+}
+function catEffPct(state, cat){
+  if(state.budget<=0) return 0;
+  return catAmount(state, cat)/state.budget*100;
+}
+function totals(state){
+  var est=0, act=0, paid=0, hasActual=false;
+  state.cats.forEach(function(cat){
+    var e = catAmount(state, cat);
+    est += e;
+    if(cat.actual!=null && !isNaN(cat.actual)){ act += Math.max(0,cat.actual); hasActual=true; }
+    else act += e;
+    if(cat.paid!=null && !isNaN(cat.paid)) paid += Math.max(0,cat.paid);
+  });
+  return {estimated:est, actual:act, paid:paid, remaining:act-paid, hasActual:hasActual};
+}
+function allocSumPct(state){
+  var s=0;
+  state.cats.forEach(function(cat){ s += catEffPct(state, cat); });
+  return s;
+}
+function costPerGuest(state){
+  if(state.guests<=0) return null;
+  return state.budget/state.guests;
+}
+function guestTier(state){
+  var cpg = costPerGuest(state);
+  if(cpg==null) return '';
+  var t = CURR[state.currency].tiers;
+  if(cpg < t[0]) return 'Budget-friendly tier';
+  if(cpg < t[1]) return 'Typical tier';
+  return 'Luxury tier';
+}
+function cateringCheck(state){
+  var pp = state.perPerson;
+  var r = CURR[state.currency].ppRange;
+  if(pp < r[0]) return 'Below typical ('+r[0]+'–'+r[1]+') — great value or verify what is included';
+  if(pp > r[1]) return 'Above typical ('+r[0]+'–'+r[1]+') — premium catering';
+  return 'Within typical range ('+r[0]+'–'+r[1]+')';
+}
+function benchmarkWarnings(state){
+  var out=[];
+  state.cats.forEach(function(cat){
+    var def = CATS.filter(function(x){return x.id===cat.id;})[0];
+    var p = catEffPct(state, cat);
+    if(state.budget>0 && (p < def.min - 0.5 || p > def.max + 0.5)){
+      out.push('<b>'+def.name+'</b> is '+p.toFixed(0)+'% — typical is '+def.min+'–'+def.max+'%.');
+    }
+  });
+  return out;
+}
+function applyPreset(state, key){
+  var p = PRESETS[key]; if(!p) return;
+  state.preset = key;
+  state.guests = p.guests;
+  state.budget = p.budget;
+  state.perPerson = CURR[state.currency].pp;
+  for(var i=0;i<state.cats.length;i++){
+    state.cats[i].pct = p.pcts[i];
+    state.cats[i].override = null; state.cats[i].actual = null; state.cats[i].paid = null;
+  }
+}
+/* ---- share-link encode/decode ---- */
+function encodeState(state){
+  var p = new URLSearchParams();
+  p.set('b', Math.round(state.budget));
+  p.set('c', state.currency);
+  p.set('g', Math.round(state.guests));
+  p.set('pp', Math.round(state.perPerson));
+  p.set('a', state.cats.map(function(c){return Math.round(c.pct*10)/10;}).join(','));
+  var o=[], q=[], d=[];
+  state.cats.forEach(function(c,i){
+    if(c.override!=null) o.push(i+':'+Math.round(c.override));
+    if(c.actual!=null)  q.push(i+':'+Math.round(c.actual));
+    if(c.paid!=null)    d.push(i+':'+Math.round(c.paid));
+  });
+  if(o.length) p.set('o', o.join(','));
+  if(q.length) p.set('q', q.join(','));
+  if(d.length) p.set('d', d.join(','));
+  return '#'+p.toString();
+}
+function decodeState(hash){
+  try{
+    var h = (hash||'').replace(/^#/,'');
+    if(!h) return null;
+    var p = new URLSearchParams(h);
+    if(!p.get('b')) return null;
+    var s = defaultState();
+    s.budget = num(p.get('b'), 30000);
+    if(CURR[p.get('c')]) s.currency = p.get('c');
+    s.guests = num(p.get('g'), 100);
+    s.perPerson = num(p.get('pp'), 85);
+    s.preset = '';
+    var a = (p.get('a')||'').split(',');
+    for(var i=0;i<s.cats.length && i<a.length;i++){
+      var v = parseFloat(a[i]); if(!isNaN(v)) s.cats[i].pct = clamp(v,0,100);
+    }
+    var fill = function(key, field){
+      (p.get(key)||'').split(',').forEach(function(pair){
+        var kv = pair.split(':'); var idx=parseInt(kv[0],10), val=parseFloat(kv[1]);
+        if(!isNaN(idx) && s.cats[idx] && !isNaN(val)) s.cats[idx][field]=val;
+      });
+    };
+    fill('o','override'); fill('q','actual'); fill('d','paid');
+    return s;
+  }catch(e){ return null; }
+}
+/* ---- CSV ---- */
+function csvEsc(v){ v=String(v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+function buildCSV(state){
+  var t = totals(state);
+  var rows = [['Category','Percent','Estimated','Actual','Paid','Remaining']];
+  state.cats.forEach(function(cat){
+    var def = CATS.filter(function(x){return x.id===cat.id;})[0];
+    var e = catAmount(state,cat);
+    var a = (cat.actual!=null&&!isNaN(cat.actual))?Math.max(0,cat.actual):e;
+    var pd = (cat.paid!=null&&!isNaN(cat.paid))?Math.max(0,cat.paid):0;
+    rows.push([def.name, catEffPct(state,cat).toFixed(1)+'%', Math.round(e), Math.round(a), Math.round(pd), Math.round(a-pd)]);
+  });
+  rows.push(['TOTAL','',Math.round(t.estimated),Math.round(t.actual),Math.round(t.paid),Math.round(t.remaining)]);
+  return rows.map(function(r){return r.map(csvEsc).join(',');}).join('\n');
+}
+/* ---- persistence (guarded for non-browser env) ---- */
+function saveState(state){
+  try{ if(typeof localStorage!=='undefined') localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+}
+function loadState(){
+  try{
+    if(typeof localStorage==='undefined') return null;
+    var raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return null;
+    var s = JSON.parse(raw);
+    if(!s || !Array.isArray(s.cats) || s.cats.length!==CATS.length) return null;
+    if(!CURR[s.currency]) s.currency='USD';
+    return s;
+  }catch(e){ return null; }
+}
+function fmt(state, v){
+  try{ return new Intl.NumberFormat('en-US',{style:'currency',currency:state.currency,maximumFractionDigits:0}).format(v||0); }
+  catch(e){ return (v||0).toString(); }
+}
+</script>
+<script>
+'use strict';
+/* ================= APP (DOM) ================= */
+var state = defaultState();
+var perPersonTouched = false;
+var saveTimer = null;
+
+function $(id){ return document.getElementById(id); }
+
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){ saveState(state); }, 300);
+}
+
+function buildCategoryRows(){
+  var host = $('categories');
+  host.innerHTML = '';
+  CATS.forEach(function(def, i){
+    var cat = state.cats[i];
+    var row = document.createElement('div');
+    row.className = 'cat' + (def.auto ? ' auto' : '');
+    row.id = 'cat-'+def.id;
+    row.innerHTML =
+      '<div class="cat-head">'+
+        '<span class="dot" style="background:'+def.color+'"></span>'+
+        '<span class="cat-name">'+def.name+'</span>'+
+        '<span class="cat-amt"><input type="number" min="0" step="50" placeholder="auto" '+
+          'aria-label="'+def.name+' exact amount" data-i="'+i+'"></span>'+
+      '</div>'+
+      '<div class="cat-slider">'+
+        '<input type="range" min="0" max="60" step="0.5" value="'+cat.pct+'" '+
+          (def.auto||cat.override!=null?'disabled':'')+' aria-label="'+def.name+' percent" data-i="'+i+'">'+
+        '<span class="cat-pct" data-pct></span>'+
+      '</div>'+
+      (def.auto ? '<div class="cat-note">Auto-calculated: guests × cost per person</div>' : '')+
+      '<details class="actual"><summary>Enter actual quote &amp; deposit</summary>'+
+        '<div class="actual-grid">'+
+          '<div><label>Actual quote</label><input type="number" min="0" step="50" placeholder="—" data-actual data-i="'+i+'"></div>'+
+          '<div><label>Deposit paid</label><input type="number" min="0" step="50" placeholder="—" data-paid data-i="'+i+'"></div>'+
+        '</div>'+
+        '<div class="variance" data-var></div>'+
+      '</details>';
+    host.appendChild(row);
+  });
+  // wire events
+  host.querySelectorAll('input[type=range]').forEach(function(el){
+    el.addEventListener('input', function(){
+      var i=+el.getAttribute('data-i');
+      state.cats[i].pct = clamp(el.value,0,60);
+      state.preset='';
+      render(); scheduleSave();
+    });
+  });
+  host.querySelectorAll('.cat-amt input').forEach(function(el){
+    el.addEventListener('input', function(){
+      var i=+el.getAttribute('data-i');
+      var v = el.value.trim()==='' ? null : num(el.value, null);
+      state.cats[i].override = (v==null||v<0) ? null : v;
+      state.preset='';
+      render(); scheduleSave();
+    });
+  });
+  host.querySelectorAll('[data-actual]').forEach(function(el){
+    el.addEventListener('input', function(){
+      var i=+el.getAttribute('data-i');
+      var v = el.value.trim()==='' ? null : num(el.value, null);
+      state.cats[i].actual = (v==null||v<0) ? null : v;
+      render(); scheduleSave();
+    });
+  });
+  host.querySelectorAll('[data-paid]').forEach(function(el){
+    el.addEventListener('input', function(){
+      var i=+el.getAttribute('data-i');
+      var v = el.value.trim()==='' ? null : num(el.value, null);
+      state.cats[i].paid = (v==null||v<0) ? null : v;
+      render(); scheduleSave();
+    });
+  });
+}
+
+function syncControls(){
+  $('budget').value = state.budget;
+  $('currency').value = state.currency;
+  $('guests').value = state.guests;
+  $('guestsRange').value = Math.min(400, state.guests);
+  $('perPerson').value = state.perPerson;
+  document.querySelectorAll('.preset').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-preset')===state.preset);
+  });
+  // refill row inputs from state
+  CATS.forEach(function(def,i){
+    var row = $('cat-'+def.id); if(!row) return;
+    var cat = state.cats[i];
+    var amtInput = row.querySelector('.cat-amt input');
+    amtInput.value = (cat.override!=null) ? Math.round(cat.override) : '';
+    var slider = row.querySelector('input[type=range]');
+    slider.value = def.auto ? catEffPct(state,cat) : cat.pct;
+    slider.disabled = !!(def.auto || cat.override!=null);
+    var aIn = row.querySelector('[data-actual]');
+    var pIn = row.querySelector('[data-paid]');
+    aIn.value = (cat.actual!=null) ? Math.round(cat.actual) : '';
+    pIn.value = (cat.paid!=null) ? Math.round(cat.paid) : '';
+  });
+}
+
+function renderDonut(t){
+  var svg = $('donut');
+  var total = t.estimated;
+  var R=90, CX=110, CY=110;
+  var html='';
+  if(total<=0){
+    html='<circle cx="'+CX+'" cy="'+CY+'" r="'+R+'" fill="none" stroke="#e9e0d4" stroke-width="34"/>';
+  }else{
+    var acc=0;
+    CATS.forEach(function(def,i){
+      var amt = catAmount(state, state.cats[i]);
+      var f = amt/total;
+      if(f<=0) return;
+      var dash = (f*100).toFixed(2);
+      var off = (-acc*100).toFixed(2);
+      html+='<circle cx="'+CX+'" cy="'+CY+'" r="'+R+'" fill="none" stroke="'+def.color+
+        '" stroke-width="34" pathLength="100" stroke-dasharray="'+dash+' '+(100-dash)+
+        '" stroke-dashoffset="'+off+'" transform="rotate(-90 '+CX+' '+CY+')"/>';
+      acc+=f;
+    });
+  }
+  html+='<text x="'+CX+'" y="'+(CY-6)+'" text-anchor="middle" font-size="15" fill="#8a7f76">Total</text>'+
+        '<text x="'+CX+'" y="'+(CY+18)+'" text-anchor="middle" font-size="17" font-weight="bold" fill="#3a3238">'+fmt(state,total)+'</text>';
+  svg.innerHTML = html;
+  var leg = $('legend');
+  leg.innerHTML = CATS.map(function(def,i){
+    var amt = catAmount(state, state.cats[i]);
+    return '<span><span class="dot" style="background:'+def.color+'"></span>'+def.name+' · '+fmt(state,amt)+'</span>';
+  }).join('');
+}
+
+function render(){
+  var t = totals(state);
+  /* meter */
+  var diff = state.budget - t.estimated;
+  var meter=$('meter'), big=$('meterBig'), sub=$('meterSub');
+  meter.className='meter '+ (Math.abs(diff)<0.5 ? 'exact' : (diff>0?'under':'over'));
+  if(Math.abs(diff)<0.5){ big.textContent='On budget'; }
+  else if(diff>0){ big.textContent='Under budget by '+fmt(state,diff); }
+  else{ big.textContent='Over budget by '+fmt(state,-diff); }
+  var subTxt = 'Planned '+fmt(state,t.estimated)+' of '+fmt(state,state.budget)+' budget';
+  if(t.hasActual){
+    var ad = state.budget - t.actual;
+    subTxt += ' · Actual quotes '+fmt(state,t.actual)+
+      (Math.abs(ad)<0.5 ? ' (on budget)' : (ad>0 ? ' ('+fmt(state,ad)+' under)' : ' ('+fmt(state,-ad)+' OVER)'));
+  }
+  sub.textContent = subTxt;
+  /* allocation warning */
+  var s = allocSumPct(state);
+  var aw = $('allocWarn');
+  if(Math.abs(s-100)>0.5 && state.budget>0){
+    aw.style.display='block';
+    aw.textContent = s<100
+      ? s.toFixed(0)+'% allocated — '+(100-s).toFixed(0)+'% of your budget is unassigned.'
+      : s.toFixed(0)+'% allocated — '+(s-100).toFixed(0)+'% over your budget total.';
+  }else{ aw.style.display='none'; }
+  /* benchmark warnings */
+  var ws = benchmarkWarnings(state);
+  $('warnings').innerHTML = ws.map(function(w){return '<div class="warn">⚠ '+w+'</div>';}).join('');
+  /* donut + legend */
+  renderDonut(t);
+  /* stats */
+  var cpg = costPerGuest(state);
+  $('costPerGuest').textContent = cpg==null ? '—' : fmt(state,cpg);
+  $('guestTier').textContent = guestTier(state);
+  $('cateringPP').textContent = fmt(state,state.perPerson);
+  $('cateringTier').textContent = cateringCheck(state);
+  /* totals */
+  $('tEst').textContent = fmt(state,t.estimated);
+  $('tAct').textContent = fmt(state,t.actual);
+  $('tPaid').textContent = fmt(state,t.paid);
+  $('tRem').textContent = fmt(state,t.remaining);
+  /* guest hint */
+  var gh = state.guests<=20?'elopement size':state.guests<=60?'intimate size':state.guests<=150?'classic size':'grand size';
+  $('guestHint').textContent = '— '+gh;
+  /* per-row live values */
+  CATS.forEach(function(def,i){
+    var row=$('cat-'+def.id); if(!row) return;
+    var cat=state.cats[i];
+    row.querySelector('[data-pct]').textContent = catEffPct(state,cat).toFixed(1)+'%';
+    if(document.activeElement !== row.querySelector('input[type=range]')){
+      row.querySelector('input[type=range]').value = def.auto ? catEffPct(state,cat) : cat.pct;
+    }
+    row.querySelector('input[type=range]').disabled = !!(def.auto || cat.override!=null);
+    var e=catAmount(state,cat);
+    var vEl=row.querySelector('[data-var]');
+    if(cat.actual!=null){
+      var v=Math.max(0,cat.actual)-e;
+      vEl.textContent = 'Variance vs estimate: '+(v>=0?'+':'−')+fmt(state,Math.abs(v)).replace('-','');
+      vEl.style.color = v>0 ? 'var(--red)' : 'var(--green)';
+    }else vEl.textContent='';
+  });
+}
+
+function fillPrint(){
+  var t=totals(state);
+  $('printMeta').textContent = 'Budget '+fmt(state,state.budget)+' · '+state.guests+' guests · '+state.currency+' · '+new Date().toLocaleDateString();
+  var html='<tr><th style="text-align:left">Category</th><th>Est.</th><th>Actual</th><th>Paid</th><th>Remaining</th></tr>';
+  CATS.forEach(function(def,i){
+    var cat=state.cats[i];
+    var e=catAmount(state,cat);
+    var a=(cat.actual!=null)?Math.max(0,cat.actual):e;
+    var pd=(cat.paid!=null)?Math.max(0,cat.paid):0;
+    html+='<tr><td style="text-align:left">'+def.name+'</td><td>'+fmt(state,e)+'</td><td>'+fmt(state,a)+'</td><td>'+fmt(state,pd)+'</td><td>'+fmt(state,a-pd)+'</td></tr>';
+  });
+  html+='<tr style="font-weight:bold"><td style="text-align:left">TOTAL</td><td>'+fmt(state,t.estimated)+'</td><td>'+fmt(state,t.actual)+'</td><td>'+fmt(state,t.paid)+'</td><td>'+fmt(state,t.remaining)+'</td></tr>';
+  $('printTable').innerHTML=html;
+}
+
+function init(){
+  /* state: URL hash > localStorage > defaults */
+  var fromHash = decodeState(window.location.hash);
+  var fromStore = fromHash ? null : loadState();
+  if(fromHash) state = fromHash;
+  else if(fromStore) state = fromStore;
+  buildCategoryRows();
+  syncControls();
+  /* control events */
+  $('budget').addEventListener('input', function(e){
+    state.budget = Math.max(0, num(e.target.value, 0)); state.preset=''; render(); scheduleSave();
+  });
+  $('currency').addEventListener('change', function(e){
+    var old = state.currency;
+    state.currency = e.target.value;
+    if(!perPersonTouched || state.perPerson===CURR[old].pp) state.perPerson = CURR[state.currency].pp;
+    render(); scheduleSave(); syncControls();
+  });
+  var guestSet = function(v){
+    state.guests = clamp(Math.round(v),0,2000); state.preset='';
+    $('guestsRange').value = Math.min(400, state.guests);
+    render(); scheduleSave();
+  };
+  $('guests').addEventListener('input', function(e){ guestSet(num(e.target.value,0)); });
+  $('guestsRange').addEventListener('input', function(e){ state.guests=+e.target.value; $('guests').value=state.guests; state.preset=''; render(); scheduleSave(); });
+  $('perPerson').addEventListener('input', function(e){
+    state.perPerson = Math.max(0, num(e.target.value,0)); perPersonTouched=true; state.preset='';
+    render(); scheduleSave();
+  });
+  document.querySelectorAll('.preset').forEach(function(b){
+    b.addEventListener('click', function(){
+      perPersonTouched=false;
+      applyPreset(state, b.getAttribute('data-preset'));
+      buildCategoryRows(); syncControls(); render(); scheduleSave();
+    });
+  });
+  /* buttons */
+  $('copyLink').addEventListener('click', function(){
+    var url = window.location.href.split('#')[0] + encodeState(state);
+    var done = function(){ $('shareMsg').textContent='Link copied — send it to your partner or planner.'; };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done, function(){ prompt('Copy your share link:', url); });
+    }else{ prompt('Copy your share link:', url); }
+    try{ history.replaceState(null,'',encodeState(state)); }catch(e){}
+  });
+  $('csvBtn').addEventListener('click', function(){
+    var blob = new Blob([buildCSV(state)], {type:'text/csv;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'wedding-budget.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  });
+  $('printBtn').addEventListener('click', function(){ fillPrint(); window.print(); });
+  $('resetBtn').addEventListener('click', function(){
+    if(!confirm('Reset the calculator to defaults? Your saved budget will be cleared.')) return;
+    try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+    try{ history.replaceState(null,'',window.location.pathname); }catch(e){}
+    state = defaultState(); perPersonTouched=false;
+    buildCategoryRows(); syncControls(); render();
+    $('shareMsg').textContent='';
+  });
+  render();
+}
+if(typeof window!=='undefined' && typeof document!=='undefined'){ init(); }
+</script>
+</body>
+</html>

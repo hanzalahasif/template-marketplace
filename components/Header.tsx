@@ -53,6 +53,7 @@ export default function Header() {
                         <Link href="/">Home</Link>
                         <Link href="/templates">Free Templates</Link>
                         <Link href="/blog">Blog</Link>
+                        <Link href="/tools">Free Tools</Link>
                         <Link href="/about">About</Link>
                         <Link href="/contact">Contact</Link>
                     </nav>
@@ -78,6 +79,7 @@ export default function Header() {
                     <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
                     <Link href="/templates" onClick={() => setIsMobileMenuOpen(false)}>Free Templates</Link>
                     <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
+                    <Link href="/tools" onClick={() => setIsMobileMenuOpen(false)}>Free Tools</Link>
                     <Link href="/about" onClick={() => setIsMobileMenuOpen(false)}>About</Link>
                     <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
                 </nav>
