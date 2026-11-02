@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
     // Related posts: same category first, then latest — never the current post.
     // Uses the existing getLatestBlogPosts query (sanity/lib/queries.ts:154).
-    const latestPosts = await getLatestBlogPosts(6).catch(() => []);
+    const latestPosts: { title: string; slug: string; category: string; thumbnail?: unknown }[] = await getLatestBlogPosts(6).catch(() => []);
     const related = (latestPosts || [])
         .filter((p: { slug: string }) => p.slug && p.slug !== slug)
         .map((p: { title: string; slug: string; category: string; thumbnail?: unknown }) => ({
@@ -93,7 +93,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     ? urlFor(p.thumbnail).width(800).height(450).url()
                     : null,
         }))
-        .sort((a, b) => Number(a.category !== post.category) - Number(b.category !== post.category))
+        .sort((a: { category: string }, b: { category: string }) => Number(a.category !== post.category) - Number(b.category !== post.category))
         .slice(0, 3);
 
     const formattedDate = new Date(post.publishedAt || new Date()).toLocaleDateString('en-US', {
