@@ -3,8 +3,11 @@ import Link from 'next/link';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-    title: 'About | TemplateLayer - Premium Website Templates',
+    title: 'About - Premium Website Templates',
     description: 'Learn about TemplateLayer - we create premium, hand-crafted website templates for modern web projects.',
+    alternates: {
+        canonical: 'https://templatelayer.com/about',
+    },
 };
 
 const values = [

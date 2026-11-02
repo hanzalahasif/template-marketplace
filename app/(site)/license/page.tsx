@@ -2,8 +2,11 @@ import { Metadata } from 'next';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-    title: 'License | TemplateLayer - Usage Terms & Guidelines',
+    title: 'License - Usage Terms & Guidelines',
     description: 'Understand the licensing terms for our premium and free website templates. Learn how you can use our products for your projects.',
+    alternates: {
+        canonical: 'https://templatelayer.com/license',
+    },
 };
 
 export default function LicensePage() {

@@ -36,8 +36,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 changeFrequency: 'weekly' as const,
                 priority: 0.8,
             }));
-    } catch {
-        // Sanity unavailable at build time — silently skip
+    } catch (error) {
+        console.error('[sitemap] Failed to fetch template slugs from Sanity:', error);
     }
 
     // Dynamic blog pages — fetched from Sanity
@@ -52,9 +52,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 changeFrequency: 'monthly' as const,
                 priority: 0.7,
             }));
-    } catch {
-        // Sanity unavailable at build time — silently skip
+    } catch (error) {
+        console.error('[sitemap] Failed to fetch blog slugs from Sanity:', error);
     }
 
-    return [...staticPages, ...templatePages, ...blogPages];
+    // Dedupe by URL — a duplicated slug in Sanity must never produce a duplicate <loc>.
+    const seen = new Set<string>();
+    return [...staticPages, ...templatePages, ...blogPages].filter((entry) => {
+        if (seen.has(entry.url)) {
+            console.warn(`[sitemap] Duplicate URL dropped: ${entry.url}`);
+            return false;
+        }
+        seen.add(entry.url);
+        return true;
+    });
 }

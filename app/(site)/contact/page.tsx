@@ -4,8 +4,11 @@ import ContactForm from '@/components/ContactForm';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-    title: 'Contact | TemplateLayer - Get in Touch',
+    title: 'Contact - Get in Touch',
     description: 'Have questions about our templates? Get in touch with the TemplateLayer team.',
+    alternates: {
+        canonical: 'https://templatelayer.com/contact',
+    },
 };
 
 const fallbackFaqs = [
@@ -20,7 +23,8 @@ export default async function ContactPage() {
     try {
         const sanityFaqs = await getFAQs('contact');
         faqs = sanityFaqs?.length > 0 ? sanityFaqs : fallbackFaqs;
-    } catch {
+    } catch (error) {
+        console.error('[contact] Failed to fetch FAQs from Sanity:', error);
         faqs = fallbackFaqs;
     }
 

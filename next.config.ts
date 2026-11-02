@@ -1,17 +1,12 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  skipTrailingSlashRedirect: true,
   images: {
     unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'cdn.sanity.io',
-      },
-      {
-        protocol: 'https',
-        hostname: '**',
       },
     ],
   },
@@ -24,7 +19,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/tools/wedding-budget-calculator/index.html',
-        destination: '/tools/wedding-budget-calculator/',
+        destination: '/tools/wedding-budget-calculator',
         permanent: true,
       },
     ];

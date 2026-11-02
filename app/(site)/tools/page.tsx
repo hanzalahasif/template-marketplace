@@ -50,9 +50,28 @@ const tools = [
     },
 ];
 
+// JSON-LD: ItemList of free tools
+const toolsJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Free Web Tools',
+    url: 'https://templatelayer.com/tools',
+    itemListElement: tools.map((tool, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: tool.title,
+        url: `https://templatelayer.com/tools/${tool.slug}`,
+    })),
+};
+
 export default function ToolsPage() {
     return (
         <div className={styles.page}>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(toolsJsonLd) }}
+            />
+
             {/* Hero */}
             <section className={styles.hero}>
                 <div className="container">
@@ -72,7 +91,7 @@ export default function ToolsPage() {
                         {tools.map((tool) => (
                             <Link
                                 key={tool.slug}
-                                href={`/tools/${tool.slug}/`}
+                                href={`/tools/${tool.slug}`}
                                 prefetch={false}
                                 className={styles.card}
                             >

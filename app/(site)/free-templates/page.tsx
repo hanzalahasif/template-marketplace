@@ -51,7 +51,8 @@ export default async function FreeTemplatesPage({
         if (sanityCategories?.length > 0) {
             categoryNames = ['All', ...sanityCategories.map((c: { title: string }) => c.title)];
         }
-    } catch {
+    } catch (error) {
+        console.error('[free-templates] Failed to fetch templates/categories from Sanity:', error);
         allTemplates = [];
     }
 

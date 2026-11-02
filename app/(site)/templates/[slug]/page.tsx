@@ -6,12 +6,15 @@ import TemplatePreviewClient from '@/components/TemplatePreviewClient';
 
 const BASE_URL = 'https://templatelayer.com';
 
+export const revalidate = 60; // Revalidate every 60 seconds — Sanity edits go live without a redeploy
+
 // Pre-render all template pages at build time
 export async function generateStaticParams() {
     try {
         const slugs: { slug: string }[] = await getAllTemplateSlugs();
         return (slugs || []).filter((s) => s.slug).map((s) => ({ slug: s.slug }));
-    } catch {
+    } catch (error) {
+        console.error('[templates] generateStaticParams: failed to fetch slugs from Sanity:', error);
         return [];
     }
 }
@@ -23,7 +26,10 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const template = await getTemplateBySlug(slug).catch(() => null);
+    const template = await getTemplateBySlug(slug).catch((error) => {
+        console.error(`[templates] getTemplateBySlug failed for "${slug}":`, error);
+        return null;
+    });
 
     if (!template) {
         return { title: 'Template Not Found' };
@@ -84,7 +90,10 @@ export default async function TemplateDetailPage({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const template = await getTemplateBySlug(slug).catch(() => null);
+    const template = await getTemplateBySlug(slug).catch((error) => {
+        console.error(`[templates] getTemplateBySlug failed for "${slug}":`, error);
+        return null;
+    });
 
     if (!template) notFound();
 

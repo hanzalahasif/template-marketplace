@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import BlogCard from '@/components/BlogCard';
+import TemplateFilters from '@/components/TemplateFilters';
 import { getBlogPosts, getCategories } from '@/sanity/lib/queries';
 import { urlFor } from '@/sanity/lib/client';
 import styles from './page.module.css';
@@ -7,12 +9,15 @@ import styles from './page.module.css';
 export const revalidate = 60; // Revalidate every 60 seconds (Standard for SEO & Speed)
 
 export const metadata: Metadata = {
-    title: 'Blog | TemplateLayer - Web Design Tips & Tutorials',
+    title: 'Blog - Web Design Tips & Tutorials',
     description: 'Learn web design tips, development tutorials, and industry insights. Stay updated with the latest trends in HTML, CSS, and JavaScript.',
+    alternates: {
+        canonical: 'https://templatelayer.com/blog',
+    },
 };
 
 
-const defaultCategories = ['All', 'Design Trends', 'Development', 'Tips & Guides', 'Performance', 'Accessibility'];
+const defaultCategories = ['All', 'Templates', 'Tutorials', 'Hosting & Tools'];
 
 function mapPost(p: Record<string, unknown>) {
     return {
@@ -26,9 +31,17 @@ function mapPost(p: Record<string, unknown>) {
     };
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
     let posts: { title: string; slug: string; excerpt: string; thumbnail: string; category: string; publishedAt: string; readTime: string }[];
     let categoryNames = defaultCategories;
+
+    const resolvedParams = await searchParams;
+    const currentCategory = (resolvedParams.category as string) || 'All';
+    const searchQuery = (resolvedParams.q as string) || '';
 
     try {
         const [sanityPosts, sanityCategories] = await Promise.all([
@@ -39,12 +52,46 @@ export default async function BlogPage() {
         if (sanityCategories?.length > 0) {
             categoryNames = ['All', ...sanityCategories.map((c: { title: string }) => c.title)];
         }
-    } catch {
+    } catch (error) {
+        console.error('[blog] Failed to fetch posts/categories from Sanity:', error);
         posts = [];
     }
 
+    // Filter posts by category (?category=) and search (?q=) — same pattern as /templates
+    const filteredPosts = posts.filter((post) => {
+        const matchesCategory =
+            currentCategory === 'All' ||
+            post.category?.toLowerCase() === currentCategory.toLowerCase();
+        const matchesSearch =
+            !searchQuery ||
+            post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+
+    // JSON-LD: Blog + list of posts so Google understands the listing
+    const blogJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        name: 'TemplateLayer Blog',
+        url: 'https://templatelayer.com/blog',
+        description: 'Learn web design tips, development tutorials, and industry insights.',
+        blogPost: filteredPosts.slice(0, 10).map((post, i) => ({
+            '@type': 'BlogPosting',
+            position: i + 1,
+            headline: post.title,
+            url: `https://templatelayer.com/blog/${post.slug}`,
+            datePublished: post.publishedAt,
+        })),
+    };
+
     return (
         <div className={styles.page}>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
+            />
+
             {/* Hero */}
             <section className={styles.hero}>
                 <div className="container">
@@ -54,46 +101,28 @@ export default async function BlogPage() {
                 </div>
             </section>
 
-            {/* Filters */}
+            {/* Filters — wired to ?category= / ?q= via the shared TemplateFilters component */}
             <section className={styles.filters}>
                 <div className="container">
-                    <div className={styles.filterBar}>
-                        <div className={styles.categories}>
-                            {categoryNames.map((cat) => (
-                                <button
-                                    key={cat}
-                                    className={`${styles.categoryBtn} ${cat === 'All' ? styles.active : ''}`}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                    <Suspense fallback={<div>Loading filters...</div>}>
+                        <TemplateFilters categories={categoryNames} baseUrl="/blog" />
+                    </Suspense>
                 </div>
             </section>
 
             {/* Blog Grid */}
             <section className={styles.blog}>
                 <div className="container">
-                    {posts.length > 0 ? (
-                        <>
-                            <div className={`grid grid-3 ${styles.grid}`}>
-                                {posts.map((post) => (
-                                    <BlogCard key={post.slug} {...post} />
-                                ))}
-                            </div>
-
-                            {/* Load More */}
-                            <div className={styles.loadMore}>
-                                <button className="btn btn-secondary">
-                                    Load More Articles
-                                </button>
-                            </div>
-                        </>
+                    {filteredPosts.length > 0 ? (
+                        <div className={`grid grid-3 ${styles.grid}`}>
+                            {filteredPosts.map((post) => (
+                                <BlogCard key={post.slug} {...post} />
+                            ))}
+                        </div>
                     ) : (
                         <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-                            <h3>No blog posts found</h3>
-                            <p>We haven&apos;t published any articles yet. Check back later!</p>
+                            <h3>No articles found</h3>
+                            <p>Try a different category or search term.</p>
                         </div>
                     )}
                 </div>

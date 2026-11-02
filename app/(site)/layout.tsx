@@ -12,9 +12,6 @@ export const metadata: Metadata = {
   keywords: "HTML templates, CSS templates, JavaScript templates, website templates, web design, responsive templates",
   authors: [{ name: "TemplateLayer" }],
   metadataBase: new URL("https://templatelayer.com"),
-  alternates: {
-    canonical: "https://templatelayer.com",
-  },
   openGraph: {
     title: "TemplateLayer — Free & Premium Website Templates",
     description: "Discover beautifully crafted, SEO-optimized website templates with live previews.",

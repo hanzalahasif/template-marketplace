@@ -42,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteName = settings?.siteName || 'TemplateLayer';
   const siteUrl = 'https://templatelayer.com';
 
-  const title = `${siteName} — Free Website Templates Download`;
+  const title = 'Free Website Templates Download';
   const description =
     settings?.siteDescription ||
     'Download free responsive HTML5/CSS3 website templates for AI startups, SaaS, agencies, portfolios, restaurants, crypto, and more. Built with Bootstrap, Tailwind CSS & JavaScript. Instant ZIP download, no login required.';
@@ -130,7 +130,8 @@ export default async function HomePage() {
     allTemplates = (sanityAll || []).map(mapTemplate);
     latestPosts = sanityPosts?.length > 0 ? sanityPosts.map(mapPost) : [];
     sanityCategories = categoriesData || [];
-  } catch {
+  } catch (error) {
+    console.error('[home] Failed to fetch templates/posts/categories from Sanity:', error);
     allTemplates = [];
     latestPosts = [];
     sanityCategories = [];

@@ -5,6 +5,10 @@ export const dynamic = 'force-static';
 
 export async function GET() {
     const filePath = path.join(process.cwd(), 'public', 'tools', 'wedding-budget-calculator', 'index.html');
+    if (!fs.existsSync(filePath)) {
+        console.error('[tools] Calculator HTML missing:', filePath);
+        return new Response('Tool not found', { status: 404 });
+    }
     const html = fs.readFileSync(filePath, 'utf-8');
 
     return new Response(html, {

@@ -8,8 +8,11 @@ import styles from './page.module.css';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-    title: 'Free Website Templates | TemplateLayer - Download HTML, CSS & JS Templates',
+    title: 'Free Website Templates - Download HTML, CSS & JS Templates',
     description: 'Download 100% free responsive website templates. Hand-crafted, modern HTML5, CSS3, Bootstrap 5 and Tailwind templates ready to launch your next project.',
+    alternates: {
+        canonical: 'https://templatelayer.com/templates',
+    },
 };
 
 
@@ -51,7 +54,8 @@ export default async function TemplatesPage({
         if (sanityCategories?.length > 0) {
             categoryNames = ['All', ...sanityCategories.map((c: { title: string }) => c.title)];
         }
-    } catch {
+    } catch (error) {
+        console.error('[templates] Failed to fetch templates/categories from Sanity:', error);
         allTemplates = [];
     }
 

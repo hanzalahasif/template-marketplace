@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getBlogPostBySlug, getAllBlogSlugs } from '@/sanity/lib/queries';
+import { getBlogPostBySlug, getAllBlogSlugs, getLatestBlogPosts } from '@/sanity/lib/queries';
 import { urlFor } from '@/sanity/lib/client';
 import { PortableText } from 'next-sanity';
 import ReactMarkdown from 'react-markdown';
@@ -10,12 +10,15 @@ import styles from './page.module.css';
 
 const BASE_URL = 'https://templatelayer.com';
 
+export const revalidate = 60; // Revalidate every 60 seconds — Sanity edits go live without a redeploy
+
 // Pre-render all blog posts at build time
 export async function generateStaticParams() {
     try {
         const slugs: { slug: string }[] = await getAllBlogSlugs();
         return (slugs || []).filter((s) => s.slug).map((s) => ({ slug: s.slug }));
-    } catch {
+    } catch (error) {
+        console.error('[blog] generateStaticParams: failed to fetch slugs from Sanity:', error);
         return [];
     }
 }
@@ -27,7 +30,10 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const post = await getBlogPostBySlug(slug).catch(() => null);
+    const post = await getBlogPostBySlug(slug).catch((error) => {
+        console.error(`[blog] getBlogPostBySlug failed for "${slug}":`, error);
+        return null;
+    });
 
     if (!post) {
         return { title: 'Article Not Found' };
@@ -68,9 +74,27 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const post = await getBlogPostBySlug(slug).catch(() => null);
+    const post = await getBlogPostBySlug(slug).catch((error) => {
+        console.error(`[blog] getBlogPostBySlug failed for "${slug}":`, error);
+        return null;
+    });
 
     if (!post) notFound();
+
+    // Related posts: same category first, then latest — never the current post.
+    // Uses the existing getLatestBlogPosts query (sanity/lib/queries.ts:154).
+    const latestPosts = await getLatestBlogPosts(6).catch(() => []);
+    const related = (latestPosts || [])
+        .filter((p: { slug: string }) => p.slug && p.slug !== slug)
+        .map((p: { title: string; slug: string; category: string; thumbnail?: unknown }) => ({
+            ...p,
+            thumbnailUrl:
+                p.thumbnail && typeof p.thumbnail === 'object'
+                    ? urlFor(p.thumbnail).width(800).height(450).url()
+                    : null,
+        }))
+        .sort((a, b) => Number(a.category !== post.category) - Number(b.category !== post.category))
+        .slice(0, 3);
 
     const formattedDate = new Date(post.publishedAt || new Date()).toLocaleDateString('en-US', {
         month: 'long',
@@ -194,6 +218,29 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     </div>
                 </div>
             </article>
+
+            {/* Related Guides */}
+            {related.length > 0 && (
+                <section className={styles.related}>
+                    <div className="container">
+                        <h2>Related Guides</h2>
+                        <div className={styles.relatedGrid}>
+                            {related.map((r) => (
+                                <Link key={r.slug} href={`/blog/${r.slug}`} className={styles.relatedCard}>
+                                    <div className={styles.relatedImage}>
+                                        {r.thumbnailUrl ? (
+                                            <img src={r.thumbnailUrl} alt={r.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            <span>{r.category || 'Guide'}</span>
+                                        )}
+                                    </div>
+                                    <h3>{r.title}</h3>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* Share */}
             <section className={styles.share}>
